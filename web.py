@@ -1,6 +1,7 @@
-  from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
+import os  # ✅ Needed for os.environ
 
 app = Flask(__name__)
 
@@ -13,7 +14,7 @@ users = {
     "testuser": generate_password_hash("password")
 }
 
-# Add this root route to avoid 404 errors when accessing "/"
+# Root route to avoid 404 errors when accessing "/"
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({"msg": "Welcome to the Flask app!"})
@@ -30,12 +31,13 @@ def register():
         return jsonify({"msg": "Username already exists"}), 400
 
     users[username] = generate_password_hash(password)
-    return jsonify({"msg": "User  registered successfully"}), 201
+    return jsonify({"msg": "User registered successfully"}), 201
 
 @app.route("/login", methods=["POST"])
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
+    
     if not username or not password:
         return jsonify({"msg": "Missing username or password"}), 400
 
@@ -51,7 +53,6 @@ def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 
-# Running the app on the production server
+# Run the app
 if __name__ == "__main__":
-    # Change the host to '0.0.0.0' for production
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))  # Use the PORT environment variable
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
