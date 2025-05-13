@@ -97,5 +97,4 @@ FRONTEND_HTML = """
   <h1>JWT Authentication</h1>
   <main>
     <nav>
-      <button id="btn-show-login" type="button" aria-label="Show login form">Login</button>
-      <button id="btn-show-register" type="button" aria-label="Show
+      <button id="btn-show-login" type="button" aria-label="Show login form">Login
