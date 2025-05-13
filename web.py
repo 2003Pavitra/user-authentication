@@ -1,20 +1,19 @@
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
-import os  # ✅ Needed for os.environ
+import os
 
 app = Flask(__name__)
 
-# Setup the Flask-JWT-Extended extension
-app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this to a more secure key in production!
+# JWT Configuration
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this in production!
 jwt = JWTManager(app)
 
-# In a real app, you'd store users in a database
+# In-memory user store (use a real database in production)
 users = {
     "testuser": generate_password_hash("password")
 }
 
-# Root route to avoid 404 errors when accessing "/"
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({"msg": "Welcome to the Flask app!"})
@@ -37,7 +36,7 @@ def register():
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
-    
+
     if not username or not password:
         return jsonify({"msg": "Missing username or password"}), 400
 
@@ -53,6 +52,5 @@ def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 
-# Run the app
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
